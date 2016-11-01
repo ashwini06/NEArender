@@ -21,3 +21,15 @@ Alternatively, install the latest development version from github:
 install.packages("devtools")
 devtools::install_github("ashwini06/NEArender")
 ```
+
+
+
+## Contributing
+
+Please [submit an issue][issues] to report bugs or ask questions.
+
+Please contribute bug fixes or new features with a [pull request][pull] to this
+repository.
+
+[issues]: https://github.com/ashwini06/NEArender/issues
+[pull]: https://help.github.com/articles/using-pull-requests/
