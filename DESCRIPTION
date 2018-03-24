@@ -1,26 +1,22 @@
 Package: NEArender
 Title: Network Enrichment Analysis
-Version: 1.4
-Date: 2016-08-16
-Authors@R: c(person(given = "Andrey", family = "Alexeyenko", role = c("aut", "cph","ths"), email = "andrej.alekseenko@scilifelab.se"),
-            person(given = "Ashwini", family = "Jeggari", role = c("aut","cre"),email="ashwinipriya.jeggari@ki.se"))
+Version: 1.5
+Authors@R: c(person(given = "Andrey", family = "Alexeyenko", role = c("aut", "cph","ths"), email = "andrej.alekseenko@scilifelab.se"), person(given = "Ashwini", family = "Jeggari", role = c("aut","cre"),email="ashwinipriya.jeggari@ki.se"))
+Maintainer: Ashwini Jeggari <ashwinipriya.jeggari@ki.se>
 Description: Performs network enrichment analysis against functional gene sets.
-    Benchmarks networks. Renders raw gene profile matrices of dimensionality 'Ngenes
-    x Nsamples' into the space of gene set (typically pathway) enrichment scores of
-    dimensionality 'Npathways x Nsamples'.
-Depends:
-    R (>= 3.0.0)
+    Benchmarks networks. Renders raw gene profile matrices of dimensionality "N genes
+    x N samples" into the space of gene set (typically pathway) enrichment scores of
+    dimensionality "N pathways x N samples".
+Depends: R (>= 3.0.0)
 License: GPL-3
-Imports:
-    parallel,
-    RColorBrewer,
-    ROCR,
-    stats,
-    MASS
-Suggests:
-    knitr,
-    rmarkdown,
-    data.table
-VignetteBuilder: knitr
+Encoding: UTF-8
 LazyData: true
-
+Imports: stats, utils, ROCR, graphics, parallel, hexbin, MASS,
+        RColorBrewer
+Suggests: knitr, rmarkdown, tinytex, data.table
+RoxygenNote: 6.0.1.9000
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2018-03-21 19:07:13 UTC; root
+Author: Andrey Alexeyenko [aut, cph, ths],
+  Ashwini Jeggari [aut, cre]
