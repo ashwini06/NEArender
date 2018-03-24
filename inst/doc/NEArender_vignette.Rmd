@@ -1,67 +1,60 @@
 ---
 title: "NEArender"
 author: "Ashwini Jeggari & Andrey Alexeyenko"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 linkcolor: blue
 output:
   pdf_document:
+    toc: true
+    number_sections: true
     fig_caption: yes
 graphics: yes
-vignette: |
+
+header-includes: 
+- \usepackage{float} 
+- \floatplacement{figure}{H} 
+ 
+vignette: >
   %\VignetteIndexEntry{NEArender R-package} 
   %\VignetteEngine{knitr::rmarkdown} 
-  %\VignetteEncoding{UTF-8}
-  %\usepackage[utf8]{inputenc}
-
+  \usepackage[utf8]{inputenc}
+  \usepackage{tinytex}
+  
 ---
+\pagebreak
+
+```{r setup, include=F, echo=F, message= FALSE}
+knitr::opts_chunk$set(fig.width=4, fig.height=4, fig.pos = "h", tidy = TRUE, tidy.opts=list(width.cutoff=60))
+```
+
 
 ```{r include=F, echo=F}
-packages <- c("NEArender","data.table")
+packages <- c("NEArender","data.table","graphics","tinytex")
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())),repos = "http://cran.us.r-project.org")  
 }
 ```
 
-```{r include=T}
+
+
+```{r include=F}
 library(NEArender)
 library(data.table)
-
+library(graphics)
+library(tinytex)
 ```
 
-## Overview
+
+# Overview
 
 Package __NEArender__ is created to provide a faster, less biased, and more convenient procedure for enrichment analysis and rendering the original data into a pathway space. The pathway scores are calculated  with a fast algorithm of the network enrichment analysis (NEA). __NEArender__ possesses both core and ancillary functionality for NEA.
-The documentation below describes the following:
 
-* [General workflow](#test1)
+## General workflow {#gw}
+![Implementation of NEArender \label{figlab0}](images/aa.png)
 
-* [Brief description of NEA and its functions](#test3)
+# Brief description of NEA and its functions {#brief}
 
-* [Included Datasets](#test2)
-
-* [Functions usage and examples](#test4)
-     + [Preparing AGS file](#ags)
-     + [Preparing FGS file](#fgs)
-     + [Preparing NET file](#net)
-     + [Miscellaneous functions](#misc)
-
-* [Network Enrichment Analysis](#nea-run)
-
-* [Network-free Gene-Set Enrichment Analysis](#gsea-run)
-
-* [Benchmarking and ROC curves](#bor)
-
-* [Estimating topological properties of used networks](#connect)
-      + [Scale-free property](#sfp)
-      + [Second order topology](#sot)
-  
-\pagebreak
-
-
-# General workflow {#test1}
-![Implementation of NEArender \label{figlab0}](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/aa.png)
-
-# Inputs {#test3}
-
+## Inputs 
 The three essential input components are:
 
 1. __Altered gene set (AGS)__: a user-defined gene set that represents an experimental result, a patient-specific sample, a biological hypothesis etc.
@@ -76,9 +69,9 @@ The three essential input components are:
 
 *2. The parametric algorithm of enrichment evaluation used in this package would be unbiased only in scale-free networks, i.e. where node connectivity values follow the power law distribution ([Albert-László Barabási et al., 2004](http://www.nature.com/nrg/journal/v5/n2/full/nrg1272.html)). This is not the case in networks that are artificially constructed from e.g. ChIP-seq based collections of transcription factor binding events ([Bovolenta LA et al., 2012](http://www.ncbi.nlm.nih.gov/pubmed/22900683)) or from computationally predicted microRNA-transcript targeting data ([Griffiths-Jones S et al., 2006](http://www.ncbi.nlm.nih.gov/pubmed/16381832)). If such network or a network component should be included, we recommend employing software that involves network permutation tests, i.e. network randomization ([Alexeyenko A et al.,2012](http://www.ncbi.nlm.nih.gov/pubmed/22966941), [McCormack et al., 2013](http://www.ncbi.nlm.nih.gov/pubmed/23372799)). In order to see how much a certain network deviates from the scale-free pattern, one can use function [connectivity](#connect)*
 
-# Analysis and its outputs {#test5}
+## Analysis and its outputs {#test5}
 
-The central function of this package is `[nea.render()]((#nea-run))`. It performs the network enrichment analysis as described first in ([Alexeyenko et al.,2012](http://www.ncbi.nlm.nih.gov/pubmed/22966941)), and output contains a number of relevant statistics: 
+The central function of this package is [`nea.render()`](#nea-run). It performs the network enrichment analysis as described first in ([Alexeyenko et al.,2012](http://www.ncbi.nlm.nih.gov/pubmed/22966941)), and output contains a number of relevant statistics: 
 
 * chi-squared score, 
 * p-value, 
@@ -101,8 +94,7 @@ If the user wants to execute the conventional *binomial GSEA*, then function [`g
 * q-value, and
 * number of genes shared by AGS and FGS.
 
-
-# Datasets {#test2}
+# Included Datasets {#data}
 The package contains the following data sets: 
   
   * two versions of NET, a smaller:
@@ -124,7 +116,7 @@ we also describe below, functions of __NEArender__ for importing text files and 
 
 Properly formatted example text files can be downloaded from [here](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/)
 
-# Functions usage and examples {#test4}
+# Functions usage and examples {#usage}
 
 In order to run `nea.render()` and `gsea.render()`, the user should prepare the input components with functions described below.
 
@@ -136,19 +128,19 @@ As mentioned above, AGSs can be prepared in two alternative ways:
 1) From pre-processed R lists and matrices or 
 2) By providing text file inputs. 
 
-**Alternative (1):**  
+### **Alternative (1):** {#s2g} 
 
 The function [`samples2ags()`](#s2g) creates AGSs from an R matrix where each column corresponds to an individual sample or an experimental condition and each row corresponds to an individual gene/protein (i.e. a potential node in the network – while IDs that are not found as network nodes would be ignored). An R list of AGSs can be prepared with `samples2ags()` by one out of five 
 available algorithms (set with parameter ‘method’): "significant", "top", "toppos", "topnorm", "toprandom" . Depending on the used algorithm, the number of genes per AGS would be either 
 data-driven (when all significant ones are included) or user-defined (when N top ranking ones are included regardless of statistical significance). See help to the function (`?samples2ags`) for more details
 
-
-###### Example of alternative (1): {#s2g}   
+#### Example of alternative (1): {#s2g}   
 
 Here we considered FANTOM5 - 43 carincinoma cell samples where the expression values indicated normalized tags per million (TPM) from CAGE-RNA sequencing ([FANTOM Consortium and the RIKEN PMI and CLST (DGT), 2014](http://www.ncbi.nlm.nih.gov/pubmed/24670764)). AGS lists are then obtained by *"topnorm"* method by which we perform data reduction and obtain sample-specific lists of altered genes (these can partially overlap with each other). 
 
 ```{r}
-#input <- fread("http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/FANTOM5.43samples.txt",sep="\t",header=T,stringsAsFactors=FALSE,data.table = F)
+# input <- fread("http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/FANTOM5.43samples.txt",
+# sep="\t",header=T,stringsAsFactors=FALSE,data.table = F)
 ##  Converting genenames as rownames
 # rownames(input) <-input[,1]
 # input <- as.matrix(input[,c(2:ncol(input))])
@@ -170,26 +162,21 @@ ags.list3 <- mutations2ags(tcga.gbm, col.mask="[-.]01$")
 
 *we optionally used the parameter `col.mask` in order to select only tumor samples by TCGA barcodes – hence the parameter is TCGA-specific.*
 
-
-**Alternative (2):**
+### **Alternative (2):** {#igs} 
 
 In case of importing a text file with ready, pre-created AGSs, one should use [`import.gs()`](#igs). The function returns a list of as many elements as there were distinct AGS labels in the file (i.e. typically multiple AGSs are imported from a single file). 
 
-###### Example of alternative (2): {#igs} 
+#### Example of alternative (2): {#igs} 
 
  The file __cluster2_Downregulated_ags.txt__ contains 274 genes which represents a sample-specific AGSs, i.e.  lists of altered genes that we have compiled with a certain procedure before. Now we are just importing the structure to be used as a list __ags.list__ within R.
 
 ```{r}
-ags.list2 <-import.gs(
-"http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/cluster2_Downregulated_ags.txt", 
-Lowercase = 1, col.gene = 1,col.set = 3, gs.type = 'ags')
+ags.list2 <-import.gs("http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/cluster2_Downregulated_ags.txt", Lowercase = 1, col.gene = 1,col.set = 3, gs.type = 'ags')
 ```
-
 
 *Based on the format of the above example files, users can create their own TAB-delimited text files to be used as __ags.list__*.
 *The column positions in the files can be arbitrarily changed using parameters __col.gene__ and __col.set__.*
 *One can view the data formats of current examples listed in NEArender package simply by (`head(can.sig.go)` or `head(fantom5.43samples)`)*
-
 
 ## Preparing FGS file {#fgs}
 
@@ -197,23 +184,20 @@ Since FGSs usually pre-exist rather than are created from user’s data, they ar
 However, there is a special option unique to NEA and not available in GSEA, where single genes can be treated as FGS. A full list of such FGSs can be automatically created from all network nodes of NET with [`as_genes_fgs()`](#misc), so that each FGS item in the output list contains just one gene.
 Alternatively, users can create more specific single- or multi-gene FGS collections of their own and then import them with `import.gs()`. In such files, one typically uses the gene/protein IDs as the FGS labels.  
 
-
 *The users can upload their own FGS text files. Identically to AGS, an FGS file should be a tab-delimited text file containing gene/protein/nodeIDs and their FGS labels (such as pathway, ontology terms, or being user-defined).*
 
-###### Examples : 
+#### Examples : 
 
  Here we used file `can.sig.go` as a small collection of functional gene sets (FGS). It contains 34 GO terms and KEGG pathway that represent signaling processes related to many diseases, with a special focus on cancer. It can be used for a primary, exploratory analysis of the package functionality (note that since the AGS and FGS formats are identical, it could also be submitted as an AGS collection). 
  
-######  Uploading text file : 
+##### Uploading text file : 
 
 ```{r}
-fgs.list <- import.gs(
-"http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/can.sig.go.txt",
+fgs.list <- import.gs("http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/can.sig.go.txt",
 Lowercase = 1, col.gene = 2, col.set = 3, gs.type = 'fgs')
 ```
 
 Note that in the package the dataset `can.sig.go` has been saved as Rdata so that it can be called directly via `data(can.sig.go)`.
-
 
 ###### Uploading Rdata Object: 
 
@@ -226,12 +210,12 @@ fgs.list <- import.gs(can.sig.go)
 
 The network files can be imported via `import.net()`. It requires two columns in a TAB-delimited file so that each line contains two node IDs connected by the given edge.
 
-###### Examples : 
+#### Examples : 
 
   `net.kegg` is a network obtained by downloading the KEGG pathways as separate KGML files, extracting from the latter all gene-gene links, and then merging the links into one global network, which erased borders between the pathways.
 Like `can.sig.go`, in NEA render `net.kegg` can be directly used as `data(net.kegg)` or as text file: 
 
-###### Uploading Rdata Object:  
+##### Uploading Rdata Object:  
 
 ```{r}
 data(net.kegg)
@@ -239,7 +223,7 @@ net <- import.net(net.kegg)
 print(paste(names(net$links)[10], net$links[[10]], sep=": "))
 ```
 
-###### Uploading text file : 
+##### Uploading text file : 
 ```{r}
 net <- import.net("http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/net.kegg.txt")
 ```
@@ -247,14 +231,12 @@ net <- import.net("http://research.scilifelab.se/andrej_alexeyenko/downloads/tes
 We can expect that within-pathway connectivity would be  higher within original pathways than between them, i.e. overall in the network. This can be seen at the respective plot (Funcoup 3.0 network) in Figure \ref{figlab1}.
 
 We can see that the connectivity pattern differs from e.g. networks derived in pathway-ignorant way from multi-facetted data integration STRING9 and merged. 
-
 `Net.merged` is the network previously used by ([Merid SK et al., 2014](http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-15-308)). Briefly, this is largely (>90%) a FunCoup based network, i.e a network from Bayesian integration of multiple literature and high-throughput data sources.  Then this basic network was merged with KEGG pathways, CORUM protein complexes, and PhosphoSite kinase-substrate links. 
 
 ```{r}
-net.merged<-"http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/merged6_and_wir1_HC2"
+net.merged <-"http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/merged6_and_wir1_HC2"
 net <- import.net(net.merged)
 ```
-
 
 ## Other Miscellaneous functions{#misc}
 
@@ -267,7 +249,6 @@ fgs.genes <- as_genes_fgs(net);
 #save_gs_list(fgs.genes, File = "~/single_gene_ags.groups.tsv");
 ```
 
-
 # NEA-analysis{#nea-run}
 
 From the above described functions, we created inputs for AGS (FANTOM5.43samples.txt), FGS (can.sig.go) and NET (net.kegg) and can now demonstrate using the main function `nea.render`.
@@ -276,7 +257,7 @@ From the above described functions, we created inputs for AGS (FANTOM5.43samples
 n1 <- nea.render(AGS=ags.list1, FGS=fgs.list, NET=net)
 ```
 
-```{r fig.width=4, fig.height=4, fig.cap=c("n1$chi - chi-square estimate","n1$z- zscores", "NEA- pvalues","NEA-qvalues"),fig.show='asis'}
+```{r fig.width=4, fig.height=4, fig.cap=c("n1$chi - chi-square estimate","n1$z- zscores", "NEA- pvalues","NEA-qvalues")}
 hist(n1$chi, breaks=100)    
 hist(n1$z, breaks=100) 
 hist(n1$p, breaks=100)  
@@ -287,22 +268,17 @@ Note that the values of chi, p, and q are rank-invariant, i.e. unambiguously rel
 
 In general purpose, exploratory analyses the statistical significance can be established by __p-__ and __q-values__. The latter is generally more correct, but the __q-values__ are reliable only with sufficiently many (at least 300-500) AGS-FGS tests done at once. In case of fewer tests, another correction (e.g. Bonferroni) should be applied.
 
-
-
 However, using the NEA output for more complex downstream analyses, such as phenotype modeling, is more challenging. The chi-squared statistic has two drawbacks from this perspective:
 
 1) It is defined on the non-negative domain and hence cannot distinguish between enrichment and depletion. 
 
 2) It is not normally distributed and thus cannot be processed by statistical methods that employ least squares estimation or otherwise expect Gaussian input (Pearson linear correlation, ANOVA, PCA, or even survival analysis).
 
-
 In order to address these problems, we recommend using as input to such modeling __z-scores__ that are calculated to AGS-FGS pairs from p-values of the chi-squared statistics.  Negative signs are assigned to those AGS-FGS pairs where the expected number of network edges exceeds the actual value (i.e. depletion). Thus, the resulting z-score distribution should appear normal under true null. The latter is generally more correct, but the __q-values__ are reliable only with sufficiently many (at least 300-500) AGS-FGS tests done at once. In case of fewer tests, another correction (e.g. Bonferroni) should be applied.
-
 
 # Binomial GSEA{#gsea-run}
 
-
-```{r include=T, fig.cap=c("g1$estimate - an estimate of the odds ratio", "g1$n - number of ags genes that belongs to corresponding fgs","g1$p - the p-value of the fishers.exact test","g1$q - Adjusted p-values by \"BH-method\"")}
+```{r include=T,fig.width=4, fig.height=3, fig.cap=c("g1$estimate - an estimate of the odds ratio", "g1$n - number of ags genes that belongs to corresponding fgs","g1$p - the p-value of the fishers.exact test","g1$q - Adjusted p-values by \"BH-method\"")}
 ags.list2 <- samples2ags(fantom5.43samples, Ntop=1000, method="topnorm")
 g1 <- gsea.render(AGS=ags.list2, FGS=fgs.list, Lowercase = 1, 
 ags.gene.col = 2, ags.group.col = 3, fgs.gene.col = 2, fgs.group.col = 3, 
@@ -314,21 +290,20 @@ hist(g1$p, breaks=100)
 hist(g1$q, breaks=100)  
 ```
   
-  
 # Benchmarking and ROC curves{#bor}
- 
+
 The package also contains functions `connectivity()`,`topology2nd()`, `benchmark()` and `roc()` which enable evaluating and benchmarking alternative NETs using either standard or custom FGSs, as described in ([Merid SK et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25236784)).
 Briefly, the `benchmark()` consists of many test cases as there are FGS members in total (multiple occurrences of the same genes in different FGS are treated separately). The procedure tests each such gene for being an FGS member. The true positive or false negative result is assigned if the gene receives an NEA score above or below a certain threshold, respectively. In parallel, randomly picked genes with matching node degree are tested against the same FGS in order to estimate specificity via the false positive versus true negative ratio. 
 The counts of alternative test outcomes TP, TN, FP, and FN at variable NEA thresholds are used for plotting ROC curves. The function can work in  the `parallel` mode (Parallelize>1), similarly to `nea.render()` above:
 
-
-```{r include=T, fig.cap=c("ROC curve evaluating KEGG network (net.kegg) for specific member term - \"kegg_04270_vascular_smooth_muscle_contraction\"")}
+```{r include=T, results='hide', fig.cap=c("ROC curve evaluating KEGG network (net.kegg)\"")}
 b0 <- benchmark (NET = net,
- GS = fgs.list[c("kegg_04270_vascular_smooth_muscle_contraction")], 
+ GS = fgs.list, 
  echo=1, graph=TRUE, na.replace = 0, mask = ".", minN = 0,
  coff.z = 1.965, coff.fdr = 0.1, Parallelize=1);
 ```
 
+*Note: The following lines of code takes longer time to calculate the actual links. Please make use of `parallel` to increase the number of CPUs cores.*
 ```{r eval=FALSE}
 b1 <- NULL;
 for (mask in c("kegg_", "go_")) {
@@ -338,30 +313,22 @@ for (file.net in c("net.kegg","net.merged")) {
 # a series of networks can be put here: c("net.kegg1", "net.kegg2", "net.kegg3") in ref_list
 net <- import.net(ref_list[[file.net]], col.1 = 1, col.2 = 2, Lowercase = 1, echo = 1)
 b1[[mask]][[file.net]] <- benchmark (NET = net, GS = fgs.list, echo=1, 
-graph=FALSE, na.replace = 0, mask = mask, minN = 0,  Parallelize=1);
+graph=FALSE, na.replace = 0, mask = mask, minN = 0,  Parallelize=3);
+roc(b1[["kegg_"]], coff.z = 2.57, main="kegg_"); 
+roc(b1[["go_"]], coff.z = 2.57, main="go_");
 }}
 
 ```
 
+![ROC curves evaluating differential performance of net.kegg and net.merged in predicting KEGG terms \label{figlabn1}](images/roc_kegg.png)
 
-```{r eval=FALSE}
-roc(b1[["kegg_"]], coff.z = 2.57, coff.fdr = 0.01,main="kegg_"); 
-roc(b1[["go_"]], coff.z = 2.57, coff.fdr = 0.01,main="go_");
-```
-
-
-![ROC curves evaluating differential performance of net.kegg and net.merged in predicting KEGG terms \label{figlabn1}](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/roc_kegg.png)
-
-![ROC curves evaluating differential performance of net.kegg and net.merged in predicting GO terms](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/roc_kegg.png)
+![ROC curves evaluating differential performance of net.kegg and net.merged in predicting GO terms](images/roc_go.png)
 
 *The full description of the ROC approach to network benchmarking can be found in ([Merid SK et al., 2014](http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-15-308)). Note that this approach is very different from the trivial measurement of edge overlap between two networks under a variable edge confidence threshold. Instead, we run multiple network enrichment tests in regard of individual genes´ membership in different pathways.* 
 
-* True Predictions (correct pathway membership) are plotted vertically, False Predictions (wrong/unknown membership)  are plotted horizontally. As always with ROC curves, one should watch false positive (X-axis) versus false negative (Y-axis) rates. Practically, the best network is the one with the highest ROC curve elevation in the upper left corner of the plot, i.e. the one that, under a suitable siginifcant threshold has led to most correct classification of true pathway members and conveyed least misleading information on false (or yet unknown) membership.*
-
-
+*True Predictions (correct pathway membership) are plotted vertically, False Predictions (wrong/unknown membership)  are plotted horizontally. As always with ROC curves, one should watch false positive (X-axis) versus false negative (Y-axis) rates. Practically, the best network is the one with the highest ROC curve elevation in the upper left corner of the plot, i.e. the one that, under a suitable siginifcant threshold has led to most correct classification of true pathway members and conveyed least misleading information on false (or yet unknown) membership.*
 
 # Estimating topological properties of used networks{#connect}
-
 ## Scale-free property{#sfp}
 
 Most of the known networks, especially the biological ones are _scale-free_. This means that the distribution of node degrees (also called node connectivity values or simply the numbers of edges for each node) follows the _power law_. Practically, it is expressed as “few nodes have many edges, whereas many nodes have few edges”. After a log-log transformation, this dependency appears as a straight line. Knowing this property is especially important because in the current package the binomial test of network enrichment expects scale-freeness in the analyzed network. If a particular network seems too different (though some deviations from the power law occur in almost every real-world network), then we would recommend using other tools, such as those based on full network randomization ([McCormack et al., 2013](http://www.ncbi.nlm.nih.gov/pubmed/23372799) , [Merid et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25236784)). 
@@ -369,48 +336,17 @@ Most of the known networks, especially the biological ones are _scale-free_. Thi
 The package contains a utility function `connectivity()` for quick visual inspection of this property. The function  receives an input network (either a text file or an R list imported with `import.net()`) and plots on the log-log scale its node degree distribution summarized into few bins. After the log-log transformation we expect the linear fit to be matching the bin top points. The better the fit, the more scale-free is the network. 
 
 ```{r include=FALSE}
-
 library(RColorBrewer)
 library(MASS)
-connectivity <- function (NET, Lowercase = 1, col.1 = 1, col.2 = 2, echo=1, main="Connectivity plot") {
-
-    if (class(NET)=="list") {net.list <- NET} else {
-    print("Importing network from text file:");
-    net.list <- import.net(NET, Lowercase = Lowercase, col.1 = col.1, col.2 = col.2, echo = echo);
-  } 
-
-  c0 <- unlist(sapply(net.list$links, length))
-  # print(length(c0));
-  h1 <- hist(c0, breaks=seq(from=min(c0-1, na.rm=T), to=max(c0, na.rm=T)+1, by=1), plot=F)
-  
-  Br = c(0, 2**seq(from=log2(min(c0, na.rm=T)), to=log2(max(c0, na.rm=T))+1, by=1));
-  t0 <- table(cut(h1$counts, breaks=Br))
-  X=log2(Br[2:length(Br)] + 0)
-  Y=log2(t0 + 0)
-  pick = which(!is.infinite(X) & !is.infinite(Y) & !is.na(X) & !is.na(Y));
-  X = X[pick];
-  Y = Y[pick];
-  # print(t0[length(t0)]);
-  plot(X, Y, log="", type="b", cex=0.5, pch=19, xaxt = "n", yaxt = "n", xlab="Edges per node", ylab="No. of nodes", main=main);
-  intX = seq(from=round(X[1]), to=round(X[length(X)]), by=1);
-  intY = 2**seq(from=round(Y[1]), to=round(Y[length(Y)]), by=-1);
-  axis(1, at=intX, labels=2**intX, col.axis="black", las=2);
-  axis(2, at=intY, labels=2**intY, col.axis="black", las=2);
-  Lm <- lm(Y ~ X, na.action=na.exclude);
-  abline(coef = coef(Lm), col="red", lty=2,untf=T);
-}
-
 ```
 
 
-```{r ,fig.cap=c("Node degree distribution of `net.merged`"),fig.show='asis'}
-connectivity(NET="http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/merged6_and_wir1_HC2",
-             Lowercase = 1, col.1 = 1, col.2 = 2, echo=1, main="Higher order topology")
+```{r results="hide", fig.cap=c("Node degree distribution"),fig.show='hold'}
+connectivityfile <-  system.file("extdata", "Connectivity.FC1_full", package = "NEArender")
+connect <- connectivity(connectivityfile)
 ```
 
 For example out of the nine networks presented in Figure \ref{figlab2}, we can see that _FunCoup 3.0_ and _KINASE2SUBSTRATE_ were likely the most and the least scale-free, respectively. Although none of the nine networks followed the power law perfectly (the red lines indicate ideal distributions given network size and connectivity range). The origin and descriptions of these networks can be found at https://www.evinet.org/.
-
-
 
 ## Second order topology{#sot}
 
@@ -418,56 +354,14 @@ Similarly to the property of scale-freeness, estimation of network enrichment in
 
 For example, it was shown that highly connected nodes tend to ‘avoid’ each other in a yeast network, i.e. such connect with each other less frequently than it would be expected by chance ([Maslov and Sneppen, 2002](http://www.ncbi.nlm.nih.gov/pubmed/11988575)). We, however, can often see an opposite tendency Figure \ref{figlab1}. In order to visualize and evaluate this property, one can employ function `topology2nd` in a fashion similar to `connectivity` described above:
 
-```{r include=FALSE}
-
-topology2nd <- function (NET, Lowercase = 1, col.1 = 1, col.2 = 2, echo=1, main="Higher order topology") {
-rf <- colorRampPalette(rev(brewer.pal(11,'Spectral')))
-r <- rf(32)
-cr <- colorRampPalette( c('gray', "red"));
-
-if (class(NET)=="list") {net.list <- NET} else {
-  print("Importing network from text file:");
-  net.list <- import.net(NET, Lowercase = Lowercase, col.1 = col.1, col.2 = col.2, echo = echo);
-} 
-
-c0 <- unlist(sapply(net.list$links, length));
-
-inew=1; 
-n2 <- matrix(NA, nrow=2 * net.list$Ntotal, ncol=2); 
-for (n1 in names(net.list$links)) {
-nnew = unlist(net.list$links[[n1]]); 
-n2[inew:(inew+length(nnew)-1),] <- cbind(n1, nnew); 
-inew=inew+length(nnew);
-}
-X = log10(c0[n2[,1]]+1);
-Y = log10(c0[n2[,2]]+1);
-k<-kde2d(X, Y, n=20);
-image(k, col=r, main=main, cex.main=1, xlab="First node degree", ylab="Second node degree", log="xy",xaxt = "n", yaxt = "n"); 
-Shift = 0;
-intX = seq(from=round(min(X, na.rm=T)), to=round(max(X, na.rm=T)), by=1);
-intY = seq(from=round(min(Y, na.rm=T)), to=round(max(Y, na.rm=T)), by=1);
-axis(1, at=intX+Shift, labels=10**intX, col.axis="black", las=2);
-axis(2, at=intY+Shift, labels=10**intY, col.axis="black", las=2);
-}
-
-
+```{r include=T, results="hide", fig.cap=c("Second order topology"), fig.show='asis'}
+topology2nd(NET=connectivityfile, Lowercase = 1, col.1 = 1, col.2 = 2)
 ```
 
-
-
-```{r include=T, fig.cap=c("Second order topology `net.merged`"), fig.show='asis'}
-topology2nd(NET="http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/merged6_and_wir1_HC2", 
-            Lowercase = 1, col.1 = 1, col.2 = 2, echo=1, main="Higher order topology")
-```
-
-
-
-# Second order topology observed in nine example biological networks 
-
-![Second order topology observed in nine example biological networks \label{figlab1}](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/topology2nd.9networks.png) 
+### Second order topology observed in nine example biological networks 
+![Second order topology observed in nine example biological networks \label{figlab1}](images/topology2nd9networks.png)
 
 From plot, networks *FunCoup 3.0* and *TF_and_targets* appear the best and the worst in terms of higher order topological bias. In FunCoup 3.0 only the most connected nodes stand for the bias, which would affect NEA scores of AGS-FGS pairs only if such nodes are unevenly distributed across the gene sets. The much more generalized bias in *TF_and_targets* (or, similarly, in *KINASE2SUBSTRATE*) is likely due to the special nature of such networks: they contain regulators and regulated proteins as two distinct node classes. In case of a strong bias discovered in a certain network, it is important to consider if it should be removed or not from the perspective of the biological study and its purposes (indeed, the answer is not always upfront). If the bias still has to be removed, one can use a special algorithm in the C++ tool by ([McCormack et al., 2013](http://www.ncbi.nlm.nih.gov/pubmed/23372799)).
 
-# Node degree distributions in nine example biological networks 
-
-![Node degree distributions in nine example biological networks.\label{figlab2}](http://research.scilifelab.se/andrej_alexeyenko/downloads/test_data/connectivity.9networks.png)
+### Node degree distributions in nine example biological networks 
+![Node degree distributions in nine example biological networks.\label{figlab2}](images/connectivity9networks.png)
