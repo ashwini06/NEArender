@@ -7,8 +7,7 @@
 #' @seealso \code{\link{import.net}}, \code{\link{import.gs}}
 #' @examples
 #' data(net.kegg)
-#' netpath <- net.kegg
-#' net <- import.net(netpath)
+#' net <- import.net(net.kegg)
 #' fgs.genes <- as_genes_fgs(net)
 #' print(fgs.genes[1:10])
 #' @export

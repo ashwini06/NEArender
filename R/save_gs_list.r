@@ -1,6 +1,6 @@
 #' Create a TAB-delimited text file from AGS or FGS
 #'
-#' Each line in this file represents one gene/protein from an AGS/FGS and is accompanied with respective AGS/FGS ID. This format can be used e.g. as input at web site EviNet \url{https://www.evinet.org/}
+#' Each line in this file represents one gene/protein from an AGS/FGS and is accompanied with respective AGS/FGS ID. This format can be used e.g. as input at web site \href{https://www.evinet.org/}{EviNet}
 
 #' @param gs.list a list created with \code{\link{samples2ags}}, \code{\link{mutations2ags}}, \code{\link{as_genes_fgs}}, or \code{\link{import.gs}}.
 #' @param File output file name.

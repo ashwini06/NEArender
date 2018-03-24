@@ -1,5 +1,5 @@
 #' NEArender
-#' 
+#'
 #' TCGA point mutations from the glioblastoma multiforme cohort
 #'
 #' @docType data

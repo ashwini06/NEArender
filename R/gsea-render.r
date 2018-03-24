@@ -1,6 +1,6 @@
 #' Gene Set Enrichment Analysis (GSEA)
 #' 
-#' A binomial version of GSEA, unified as much as possible with \code{\link{nea.render}}. Given the altered gene sets (AGS) and functional gene sets (FGS), calculates no. of members (genes/protein IDs) shared by each AGS-FGS pair as well as respective enrichment statistics. Returns matrices of size \code{length(FGS)} x \code{length(AGS)} (see "Value"). Each of these two parameters can be submitted as either a text file or as an R list which have been preloaded with \code{\link{import.gs}}.
+#' A binomial version of GSEA, unified as much as possible with \code{\link{nea.render}}. Given the altered gene sets (AGS) and functional gene sets (FGS), calculates no. of members (genes/protein IDs) shared by each AGS-FGS pair as well as respective enrichment statistics. Returns matrices of size \emph{{length(FGS)} x {length(AGS)}} (see "Value"). Each of these two parameters can be submitted as either a text file or as an R list which have been preloaded with \code{\link{import.gs}}.
 
 #' @param AGS Either a text file or a list of members of each AGS (see Details). Group IDs should be found in \code{ags.group.col} and gene IDs would be found in \code{ags.gene.col}. Identical to AGS needed for in \code{\link{nea.render}} - see also details there. 
 #' @param FGS Either a text file or a list of members of each FGS (see Details). Group IDs should be found in \code{fgs.group.col} and gene IDs would be found in \code{fgs.gene.col}. Alsmost identical to FGS needed for in \code{\link{nea.render}}. 
@@ -17,14 +17,14 @@
 #' @keywords AGS
 #' @keywords FGS
 #' @examples
-#' ags.list <- samples2ags(fantom5.43samples, Ntop=1000, method="topnorm")
+#' ags.list <- samples2ags(fantom5.43samples, Ntop=20, method="topnorm")
 #' data(can.sig.go)
 #' fpath <- can.sig.go
 #' fgs.list <- import.gs(fpath)
 #' g1 <- gsea.render(AGS=ags.list, FGS=fgs.list, Lowercase = 1, 
 #' ags.gene.col = 2, ags.group.col = 3, fgs.gene.col = 2, fgs.group.col = 3, 
 #' echo=1, Ntotal = 20000, Parallelize=1)
-#' hist(log(g1$estimate), breaks=100)
+#' hist(g1$estimate, breaks=100)
 #' hist(g1$n, breaks=100)
 #' hist(g1$p, breaks=100)
 #' hist(g1$q, breaks=100)
@@ -40,7 +40,7 @@ fgs.list <- import.gs(FGS, Lowercase=Lowercase, fgs.gene.col, fgs.group.col, gs.
 if (echo>0) {print(paste("FGS: ", length(unique(unlist(fgs.list))), " genes in ", length(fgs.list), " groups.", sep = ""));} 
 }
 
-if (is.list(AGS)) {ags.list <- AGS
+if (is.list(AGS)) {ags.list <- AGS;
 } else {
 ags.list <- import.gs(AGS, Lowercase=Lowercase, ags.gene.col, ags.group.col, gs.type = 'a')
 }
@@ -69,23 +69,29 @@ l1 <- mclapply(names(fgs.list), Nov.par, ags.list, mc.cores = Parallelize);
 } else {
 l1 <- lapply(names(fgs.list), Nov.par, ags.list);
 }
-GSEA.ags_fgs <- array(unlist(l1), dim=c(3, length(ags.list), length(fgs.list)), dimnames=list(Stats=c("P", "N", "OR"), ags.names=names(ags.list), fgs.names=names(fgs.list)));
+GSEA.ags_fgs <- array(unlist(l1), dim=c(3, length(ags.list), length(fgs.list)), dimnames=list(Stats=c("P", "N", "OR"), ags.names=names(ags.list), fgs.names=as.vector(names(fgs.list))));
 stats <- NULL;
-stats$n <-  t(GSEA.ags_fgs["N",,]);
-stats$estimate <-  t(GSEA.ags_fgs["OR",,]);
+stats$n <-  t(as.matrix(GSEA.ags_fgs["N",,]));
+stats$estimate <- t(as.matrix(GSEA.ags_fgs["OR",,]));
 va = 'estimate'; 
 # Min = min(stats[[va]][which(!is.infinite(stats[[va]]))], na.rm=T) - 0;
 Max = max(stats[[va]][which(!is.infinite(stats[[va]]))], na.rm=T) + 1;
 # stats[[va]][which(is.infinite(stats[[va]]) & (stats[[va]] < 0))] = Min;
 stats[[va]][which(is.infinite(stats[[va]]) & (stats[[va]] > 0))] = Max;
 
-stats$p <- t(GSEA.ags_fgs["P",,]);
+stats$p <- t(as.matrix(GSEA.ags_fgs["P",,]));
 stats$q <- matrix(
 p.adjust(stats$p, method="BH"), 
 nrow = nrow(stats$p), ncol = ncol(stats$p), 
-dimnames = list(rownames(stats$p), colnames(stats$p)), 
 byrow=FALSE);
-stats$q[which(stats$estimate < 1)] = 1
-# stats$q <- t(p.adjust(stats$p, method="BH"));
+stats$q[which(stats$estimate < 1)] = 1;
+
+for (va in names(stats)) {
+if (length(ags.list) == 1) {
+stats[[va]] <- t(stats[[va]]);
+}
+rownames(stats[[va]]) <- dimnames(GSEA.ags_fgs)$fgs.names;
+colnames(stats[[va]]) <- dimnames(GSEA.ags_fgs)$ags.names;
+}
 return(stats);
 }
