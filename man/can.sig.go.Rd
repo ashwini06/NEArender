@@ -16,4 +16,3 @@ head(can.sig.go)
 
 }
 \keyword{datasets}
-

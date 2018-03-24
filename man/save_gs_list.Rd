@@ -12,7 +12,7 @@ save_gs_list(gs.list, File = "gs.list.groups")
 \item{File}{output file name.}
 }
 \description{
-Each line in this file represents one gene/protein from an AGS/FGS and is accompanied with respective AGS/FGS ID. This format can be used e.g. as input at web site EviNet \url{https://www.evinet.org/}
+Each line in this file represents one gene/protein from an AGS/FGS and is accompanied with respective AGS/FGS ID. This format can be used e.g. as input at web site \href{https://www.evinet.org/}{EviNet}
 }
 \examples{
 data(net.kegg)
@@ -29,4 +29,3 @@ save_gs_list(fgs.genes, File = "single_gene_ags.groups.tsv");
 \seealso{
 \code{\link{samples2ags}}, \code{\link{mutations2ags}}, \code{\link{as_genes_fgs}}, \code{\link{import.gs}}
 }
-

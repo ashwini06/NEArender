@@ -34,7 +34,7 @@ benchmark(NET, GS, gs.gene.col = 2, gs.group.col = 3, net.gene1.col = 1,
 
 \item{coff.z}{a parameter to \code{\link{roc}}.}
 
-\item{coff.fdr}{a parameter to \code{\link{roc}}.}
+\item{coff.fdr}{to make significance levels comparable between different curves, the point where FDR=\code{coff.fdr} will be labeled with a circle (think of TP/FP ratio at this level).}
 
 \item{Parallelize}{The number of CPU cores to be used for the step "Counting actual links" (while the other steps are sufficiently fast). The option is not supported in Windows.}
 }
@@ -42,7 +42,16 @@ benchmark(NET, GS, gs.gene.col = 2, gs.group.col = 3, net.gene1.col = 1,
 An object, i.e. a list of three equal-length vectors from a \code{\link{prediction}} object of ROCR package (\code{prediction@cutoffs}, \code{prediction@fp}, \code{prediction@tp}) and the point that matches \code{coff.fdr}. These are needed to plot a ROC curve for the given network and test set by using \code{\link{roc}}.
 }
 \description{
-Tests the ability of a given network to perform well in a network enrichment analysis. It executes a series of multiple individual tests: for each member gene of a pathway or another functional set calculates the network enrichment score against other members of the same gene set. This procedure gives true positive and false negative test results. In order to complement it with false positives and true negatives, the same is done for randomly picked genes (with matching node connectivity values) against the same functional sets. The two vectors allow plotting a ROC curve where at each sequential cutoff represents a ratio of true positive vs. false positive predictions. This approach (first presented in Merid et al. (2012) \url{http://www.biomedcentral.com/1471-2105/15/308}) is an alternative to the trivial counting edges shared between different networks  and is superior to the latter because: 1) the analysis can be done without knowing the "true", reference network, 2) benchmarks can be  context-dependent by using domain-specific test sets (e.g. cancer, diabetes etc.), 3) one can compare more than two networks at a time, and 4) given dense global networks and due to the use of multi-gene sets, presence or absence of particular links is unlikely to affect the overall result.
+Tests the ability of a given network to perform well in a network enrichment analysis. It executes a series of multiple individual tests: for each member gene of a pathway or another functional set calculates the network enrichment score against other members of the same gene set. This procedure gives true positive and false negative test results. In order to complement it with false positives and true negatives, the same is done for randomly picked genes (with matching node connectivity values) against the same functional sets. The two vectors allow plotting a ROC curve where at each sequential cutoff represents a ratio of true positive vs. false positive predictions. This approach (first presented in  \href{http://www.biomedcentral.com/1471-2105/15/308}{Merid et al. (2012)}) is an alternative to the trivial counting edges shared between different networks  and is superior to the latter because: 1) the analysis can be done without knowing the "true" reference network, 2) benchmarks can be context-dependent by using domain-specific test sets (e.g. cancer, diabetes etc.), 3) one can compare more than two networks at a time, and 4) given dense global networks and due to the use of multi-gene sets, presence or absence of particular links is unlikely to affect the overall result.
+}
+\details{
+The function would either plot a ROC curve for the analyzed network, or return an object with the following slots from function prediction (package ROCR):\cr
+ tp, vector of true positives;\cr
+ fp, vector of false positives;\cr
+ tn, vector of true negatives;\cr
+ fn, vector of false negatives;\cr
+ cutoffs, z-score cutoffs from \code{nea.render};\cr
+ cross.z, a z-score value which corresponds to FDR=\code{coff.fdr} (will be denoted with a special marker at the curve);
 }
 \examples{
 data(can.sig.go);
@@ -53,7 +62,7 @@ netpath <- net.kegg
 net <- import.net(netpath)
 \donttest{
 b0 <- benchmark (NET = net,
- GS = gs.list[c("kegg_04270_vascular_smooth_muscle_contraction")], 
+ GS = gs.list, 
  echo=1, graph=TRUE, na.replace = 0, mask = ".", minN = 0,
  coff.z = 1.965, coff.fdr = 0.1, Parallelize=2);
 }
@@ -62,16 +71,15 @@ b0 <- benchmark (NET = net,
 b1 <- NULL;
 for (mask in c("kegg_", "go_")) {
 b1[[mask]] <- NULL;
-ref_list <- list(net1=netpath,net2=netpath)
-for (file.net in c("net1")) {
+for (file.net in c("netpath")) {
 # a series of networks can be put here: c("netpath1", "netpath2", "netpath3")
-net <- import.net(ref_list[[file.net]], col.1 = 1, col.2 = 2, Lowercase = 1, echo = 1)
+net <- import.net(netpath, col.1 = 1, col.2 = 2, Lowercase = 1, echo = 1)
 b1[[mask]][[file.net]] <- benchmark (NET = net, GS = gs.list, echo=1, 
 graph=FALSE, na.replace = 0, mask = mask, minN = 0,  Parallelize=1);
 }}
 par(mfrow=c(2,1));
-roc(b1[["kegg_"]][[file.net]], coff.z = 2.57, coff.fdr = 0.01);
-roc(b1[["go_"]][[file.net]], coff.z = 2.57, coff.fdr = 0.01);
+roc(b1[["kegg_"]], coff.z = 2.57,main="kegg_");
+roc(b1[["go_"]], coff.z = 2.57,main="go_");
 }
 }
 \references{
@@ -81,4 +89,3 @@ roc(b1[["go_"]][[file.net]], coff.z = 2.57, coff.fdr = 0.01);
 \code{\link{roc}}, \code{\link{nea.render}}
 }
 \keyword{ROC}
-

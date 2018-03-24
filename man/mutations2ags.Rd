@@ -4,20 +4,20 @@
 \alias{mutations2ags}
 \title{Create AGS from a mutation matrix}
 \usage{
-mutations2ags(MUT, col.mask = NA, namesFromColumn = NA, Lowercase = 1)
+mutations2ags(MUT, col.mask = NA, namesFromColumn = NA, permute = FALSE)
 }
 \arguments{
-\item{MUT}{Matrix of size Ngenes x Nsamples (the both Ns can be arbitrarily defined, depending on the screen scale).}
+\item{MUT}{Matrix of size \emph{Ngenes x Nsamples} (the both Ns are positive integers, depending on the screen scale).}
 
 \item{col.mask}{To include only columns with IDs that contain the specified mask. This parameter is aware of regular expression syntax, i.e. uses \code{grep(..., fixed = FALSE)}.}
 
 \item{namesFromColumn}{Number of the column (if any) that contains the gene/protein names. Note that it is only necessary if the latter are NOT the unique rownames of the matrix. This could be sometimes useful for processing redundant gene  profiles with one-to-many mapping etc. Otherwise (i.e. the default), rownames shall contain gene IDs.}
 
-\item{Lowercase}{render gene/protein IDs lower-case (Default:1)}
+\item{permute}{If the list of AGSs should be created via random permutation of sample labels. This might be needed for testing the null hypothesis that mutated genes are randomly combined into individual genomes, while having the same frequency distribution as in the actual cohort. Since reproducing the original distribution of AGS sizes is a non-trivial set theoretical problem, the procedure is accompanied by plotting gene set sizes in actual vs. permuted AGS (the latter is usually smaller, which might be unavoidable without a sophisticated algortihm...).}
 }
 \description{
 Imports a TAB-delimited file with mutations.
-This function creates a new list of AGSs from a table listing point (or otherwise defined quantitative) mutations. Such a matrix M typically has size Ngenes x Nsamples, so that the current function returns a list of \code{length=ncol(M)}. AGSs for each of the Nsamples are created as simple lists of all mutated genes G in a given sample S, i.e. any value X in the matrix M that satisfies condition \code{!is.na(X)} would be treated as a mutation. Eventual mutation types / categories are ignored. Wild type positions in the original TAB-delimited file should be filled with NAs.
+This function creates a new list of AGSs from a table listing point (or otherwise qualitatively defined) mutations. Such a matrix M typically has size Ngenes x Nsamples, so that the current function returns a list of \code{length=ncol(M)}. For each of the Nsamples, AGSs are created as simple lists of all mutated genes G in a given sample S, i.e. any value X in the matrix M that satisfies condition \code{!is.na(X)} would be treated as a mutation. Eventual mutation types / categories are ignored. Wild type gene states in the original TAB-delimited file should be represented with NAs.
 }
 \examples{
 data("tcga.gbm",package="NEArender")
@@ -26,4 +26,3 @@ ags.list <- mutations2ags(tcga.gbm, col.mask="[-.]01$")
 length(ags.list)
 length(unique(unlist(ags.list)))
 }
-

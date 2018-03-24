@@ -33,17 +33,17 @@ gsea.render(AGS, FGS, Lowercase = 1, ags.gene.col = 2, ags.group.col = 3,
 A list of entries \code{estimate}, \code{p}, \code{q}, and \code{n}, each of which is a matrix of size \code{length(FGS)} x \code{length(AGS)}. The two former ones contain respective output of \code{\link{fisher.test}}: \code{p.value} and \code{estimate}, whereas \code{q} is produced by \code{p.adjust(p.value, method="BH")} and \code{n} is the no. of shared  members. Input to \code{\link{fisher.test}} is \code{matrix(c(<no. of shared  members>, <no. of solely FGS  members>, <no. of solely AGS  members>, <no. of non-members>), nrow=2)}.
 }
 \description{
-A binomial version of GSEA, unified as much as possible with \code{\link{nea.render}}. Given the altered gene sets (AGS) and functional gene sets (FGS), calculates no. of members (genes/protein IDs) shared by each AGS-FGS pair as well as respective enrichment statistics. Returns matrices of size \code{length(FGS)} x \code{length(AGS)} (see "Value"). Each of these two parameters can be submitted as either a text file or as an R list which have been preloaded with \code{\link{import.gs}}.
+A binomial version of GSEA, unified as much as possible with \code{\link{nea.render}}. Given the altered gene sets (AGS) and functional gene sets (FGS), calculates no. of members (genes/protein IDs) shared by each AGS-FGS pair as well as respective enrichment statistics. Returns matrices of size \emph{{length(FGS)} x {length(AGS)}} (see "Value"). Each of these two parameters can be submitted as either a text file or as an R list which have been preloaded with \code{\link{import.gs}}.
 }
 \examples{
-ags.list <- samples2ags(fantom5.43samples, Ntop=1000, method="topnorm")
+ags.list <- samples2ags(fantom5.43samples, Ntop=20, method="topnorm")
 data(can.sig.go)
 fpath <- can.sig.go
 fgs.list <- import.gs(fpath)
 g1 <- gsea.render(AGS=ags.list, FGS=fgs.list, Lowercase = 1, 
 ags.gene.col = 2, ags.group.col = 3, fgs.gene.col = 2, fgs.group.col = 3, 
 echo=1, Ntotal = 20000, Parallelize=1)
-hist(log(g1$estimate), breaks=100)
+hist(g1$estimate, breaks=100)
 hist(g1$n, breaks=100)
 hist(g1$p, breaks=100)
 hist(g1$q, breaks=100)
@@ -53,4 +53,3 @@ hist(g1$q, breaks=100)
 }
 \keyword{AGS}
 \keyword{FGS}
-

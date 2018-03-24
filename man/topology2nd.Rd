@@ -24,11 +24,11 @@ topology2nd(NET, Lowercase = 1, col.1 = 1, col.2 = 2, echo = 1,
 Auxiliary function to estimate how non-random are associations of node degrees in network edges.
 }
 \examples{
-data(net.kegg)
-net <- net.kegg
-topology2nd(NET=net, main="Second order topology in KEGG network")
+file <-  system.file("extdata", "Connectivity.FC1_full", package = "NEArender")
+\donttest{
+ topology2nd(NET=file)
+}
 }
 \seealso{
 \code{\link{connectivity}}, \code{\link{benchmark}}
 }
-

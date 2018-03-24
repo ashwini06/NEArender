@@ -4,7 +4,8 @@
 \alias{import.net}
 \title{Import a network text file}
 \usage{
-import.net(tbl, Lowercase = 1, col.1 = 1, col.2 = 2, echo = 1)
+import.net(tbl, Lowercase = 1, col.1 = 1, col.2 = 2, col.score = 3,
+  min.score = NA, n.top = NA, echo = 1)
 }
 \arguments{
 \item{tbl}{Input network file.}
@@ -15,19 +16,24 @@ import.net(tbl, Lowercase = 1, col.1 = 1, col.2 = 2, echo = 1)
 
 \item{col.2}{Number of the column in the input file that corresponds to node 2 (gene/protein ID).}
 
+\item{col.score}{Number of column where edge confidence score is found.}
+
+\item{min.score}{Minimum confidence score for an edge to be included in the network.}
+
+\item{n.top}{Number of edges to be included in the network, top when ranked by confidence score (is alternative to min.score).}
+
 \item{echo}{if execution progress should be reported.}
 }
 \value{
 \code{$Ntotal}, the total number of edges in the network and \code{$links}, an object with members (named by gene/protein IDs) that correspond to each node in the global network. Each entry of the list \code{$links} contains a vector of neighbours of the respective node.
 }
 \description{
-This function reads in a TAB-delimited file with the global network data needed for NEA. 
+This function reads in a TAB-delimited file with the global network data needed for NEA.
 Checks the format of the given NETWORK file, processes unique genes from the given network file,  and counts the network links.
 }
 \examples{
 data(net.kegg)
-netpath <- net.kegg
-net <- import.net(netpath)
+net <- import.net(net.kegg)
 summary(net$links)
 print(paste(names(net$links)[100], net$links[[100]], sep=": "))
 
@@ -35,4 +41,3 @@ print(paste(names(net$links)[100], net$links[[100]], sep=": "))
 \seealso{
 \code{\link{mutations2ags}}, \code{\link{samples2ags}}
 }
-

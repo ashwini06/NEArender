@@ -2,33 +2,42 @@
 % Please edit documentation in R/connectivity.r
 \name{connectivity}
 \alias{connectivity}
-\title{Node degree distribution and network scale-freeness}
+\title{Connectivity}
 \usage{
-connectivity(NET, Lowercase = 1, col.1 = 1, col.2 = 2, echo = 1,
-  main = "Connectivity plot")
+connectivity(NET, Lowercase = 1, col.1 = 1, col.2 = 2, col.score = 3,
+  echo = 1, main = "Connectivity plot", min.score = NA, n.top = NA,
+  hex = FALSE)
 }
 \arguments{
-\item{NET}{Either a text network file or an R list imported with \code{import.net}}
+\item{NET}{Input network file.}
 
-\item{Lowercase}{Render gene/protein IDs lower-case.}
+\item{Lowercase}{If node IDs should be rendered lower-case (Default:1, i.e. 'yes').}
 
-\item{col.1}{Number of the column in the input file that corresponds to node 1 (gene/protein ID).}
+\item{col.1}{Number of column where 1st node of each edge should be found (only needed when NET is a text file rather than a list).}
 
-\item{col.2}{Number of the column in the input file that corresponds to node 2 (gene/protein ID).}
+\item{col.2}{Number of column where 2nd node of each edge should be found (only needed when NET is a text file rather than a list, i.e. passed down to import.net).}
 
-\item{echo}{if execution progress should be reported.}
+\item{col.score}{Number of column  where edge confidence score is found (only needed when NET is a text file rather than a list, i.e. passed down to import.net).}
 
-\item{main}{The plot title.}
+\item{echo}{If messages about execution progress should appear.}
+
+\item{main}{title name for the plot, default: "Connectivity plot"}
+
+\item{min.score}{Minimum confidence score for an edge to be included in the network (is alternative to n.top and is only used when NET is a text file rather than a list, i.e. passed down to import.net).}
+
+\item{n.top}{Number of edges to be included in the network, top when ranked by confidence score (is alternative to min.score and only used when NET is a text file rather than a list, i.e. passed down to import.net).}
+
+\item{hex}{If the node degree distribution should be presented as density plot using package hexbin.}
 }
 \description{
-Auxiliary function to estimate how much a certain network satisfy the  property of scale-freeness.
+Function for plotting node degree distribution in order to test if the network is scale-free
 }
 \examples{
-data(net.kegg)
-net <- net.kegg
-connectivity(NET=net, main="Scale-free property of KEGG network")
+file <-  system.file("extdata", "Connectivity.FC1_full", package = "NEArender")
+\donttest{
+connect <- connectivity(file,hex=TRUE)
+}
 }
 \seealso{
-\code{\link{topology2nd}}, \code{\link{benchmark}}
+\code{\link{benchmark}} and \code{\link{import.net}}
 }
-

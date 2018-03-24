@@ -16,4 +16,3 @@ colnames(fantom5.43samples)
 
 }
 \keyword{datasets}
-

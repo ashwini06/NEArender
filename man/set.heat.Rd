@@ -26,11 +26,10 @@ fgs.list <- import.gs(fpath)
 data(net.kegg)
 netpath <- net.kegg
 net <- import.net(netpath)
-n1 <- nea.render(AGS=ags.list, FGS=fgs.list, NET=net)
+n1 <- nea.render(AGS=ags.list, FGS=fgs.list, NET=net, graph=TRUE)
 set.heat(ags.list, fgs.list, n1$z, Log=FALSE)
 }
 \seealso{
 \code{\link{nea.render}}
 }
 \keyword{internal}
-

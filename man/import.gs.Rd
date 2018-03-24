@@ -4,7 +4,8 @@
 \alias{import.gs}
 \title{Read in an AGS or FGS test file}
 \usage{
-import.gs(tbl, Lowercase = 1, col.gene = 2, col.set = 3, gs.type = "")
+import.gs(tbl, Lowercase = 1, col.gene = 2, col.set = 3, gs.type = "",
+  header = FALSE)
 }
 \arguments{
 \item{tbl}{Input TAB-delimited FGS file.}
@@ -13,12 +14,14 @@ import.gs(tbl, Lowercase = 1, col.gene = 2, col.set = 3, gs.type = "")
 
 \item{col.gene}{Number of the column with gene/protein IDs in the input file.}
 
-\item{col.set}{Number of the column with set (sample, pathway etc.) IDs in the input file. 
-Special options: 
-\code{col.set = 0}: all gene/protein IDs in the file become members of a single FGS; 
+\item{col.set}{Number of the column with set (sample, pathway etc.) IDs in the input file.
+Special options:
+\code{col.set = 0}: all gene/protein IDs in the file become members of a single FGS;
 \code{col.set < 0} each single gene/protein IDs becomes a separate FGS (ID of which equals the gene/protein ID).}
 
 \item{gs.type}{GS type, 'a' produces AGS, 'f' produces FGS.}
+
+\item{header}{assign logical value (TRUE/FALSE) to consider the first line as header from the input file (default:FALSE).}
 }
 \value{
 A list with entry names that correspond AGS/FGS IDs in the input file and gene/protein IDs as elements of each entry.
@@ -37,4 +40,3 @@ summary(fgs.list)
 \seealso{
 \code{\link{mutations2ags}}, \link{samples2ags}
 }
-
