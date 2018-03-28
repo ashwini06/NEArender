@@ -14,7 +14,6 @@ LazyData: true
 Imports: stats, utils, ROCR, graphics, parallel, hexbin, MASS,
         RColorBrewer
 Suggests: knitr, rmarkdown, tinytex, data.table
-RoxygenNote: 6.0.1.9000
 VignetteBuilder: knitr
 NeedsCompilation: no
 Packaged: 2018-03-21 19:07:13 UTC; root
